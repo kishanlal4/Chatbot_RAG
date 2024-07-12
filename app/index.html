@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload PDF and Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #uploadForm, #chatbox {
+            margin: 20px;
+        }
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: scroll;
+        }
+        .message {
+            margin: 5px 0;
+        }
+        .user-message {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload PDF and Chat</h1>
+    
+    <div id="uploadForm">
+        <h2>Upload PDF</h2>
+        <form id="pdfUploadForm">
+            <input type="file" id="pdfFile" accept="application/pdf" required>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+    
+    <div id="chatbox">
+        <h2>Chatbox</h2>
+        <div id="messages"></div>
+        <form id="chatForm">
+            <input type="text" id="messageInput" placeholder="Type a message..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('pdfUploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('pdfFile');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('http://localhost:8000/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('File uploaded successfully');
+                } else {
+                    alert('Failed to upload file');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error uploading file');
+            }
+        });
+
+        document.getElementById('chatForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+
+            const response = await fetch('http://localhost:8000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message }),
+            });
+
+            const result = await response.json();
+            addMessage('You', message, 'user-message');
+            addMessage('Bot', result.response, 'bot-message');
+            messageInput.value = '';
+        });
+
+        function addMessage(sender, message, className) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${className}`;
+            messageDiv.innerText = `${sender}: ${message}`;
+            document.getElementById('messages').appendChild(messageDiv);
+        }
+    </script>
+</body>
+</html>

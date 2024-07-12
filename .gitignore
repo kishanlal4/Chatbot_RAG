@@ -1,0 +1,24 @@
+### JupyterNotebooks ###
+# gitignore template for Jupyter Notebooks
+
+.ipynb_checkpoints
+.ipynb_checkpoints/*
+
+# IPython
+profile_default/
+ipython_config.py
+
+### VisualStudioCode ###
+.vscode/*
+
+### VisualStudio ###
+.vs/*
+
+### Flask Python Stack ###
+flask_app/__pycache__/*
+__pycache__/*
+app/__pycache__/*
+app/**/__pycache__/
+
+# ENV
+.venv/*
